@@ -4,6 +4,8 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
+const foldersRouter = require('./folder-router')
+const noteRouter = require('./note-router')
 
 const app = express()
 
@@ -14,6 +16,14 @@ const morganOption = (NODE_ENV === 'production')
 app.use(morgan(morganOption))
 app.use(helmet())
 app.use(cors())
+
+app.use('/api/folders', foldersRouter)
+app.use('/api/notes', noteRouter)
+
+app.get('/xss', (req, res) => {
+    res.cookie('secretToken', '1234567890');
+    res.sendFile(__dirname + '/xss-example.html');
+  });
 
 app.get('/', (req, res) => {
     res.send('Hello, world!')
