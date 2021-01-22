@@ -29,7 +29,7 @@ noteRouter
         const { id, name, modified, content, folderId } = req.body
         const newNote = { id, name, modified, content, folderId }
     
-        for (const [key, value] of Object.entries(newFolder))
+        for (const [key, value] of Object.entries(newNote))
           if (value == null)
             return res.status(400).json({
               error: { message: `Missing '${key}' in request body` }
