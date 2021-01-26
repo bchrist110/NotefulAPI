@@ -42,13 +42,13 @@ noteRouter
             res
               .status(201)
               .location(path.posix.join(req.originalUrl, `/${note.id}`))
-              .json(serializeComment(note))
+              .json(serializeNote(note))
           })
           .catch(next)
     })
 
 noteRouter
-    .route('/:note_id')
+    .route('/:id')
     .get((req, res, next) => {
         res.json(serializeNote(res.note))
     })

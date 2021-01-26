@@ -39,13 +39,13 @@ foldersRouter
             res
               .status(201)
               .location(path.posix.join(req.originalUrl, `/${folder.id}`))
-              .json(serializeComment(folder))
+              .json(serializeFolder(folder))
           })
           .catch(next)
     })
 
 foldersRouter
-    .route('/:folder_id')
+    .route('/:id')
     .delete((req, res, next) => {
         FoldersService.deleteFolder(
           req.app.get('db'),
