@@ -11,7 +11,7 @@ const serializeNote = note => ({
     name: note.name,
     modified: note.modified,
     content: note.content,
-    folderId: note.folderId
+    folderid: note.folderid
 })
 
 noteRouter
@@ -25,8 +25,9 @@ noteRouter
           .catch(next)
     })
     .post(jsonParser, (req, res, next) => {
-        const { name, content, folderId } = req.body
-        const newNote = { name, content, folderId }
+        const knexInstance = req.app.get('db')
+        const { name, content, folderid, modified } = req.body
+        const newNote = { name, content, folderid }
     
         for (const [key, value] of Object.entries(newNote))
           if (value == null)
@@ -34,8 +35,13 @@ noteRouter
               error: { message: `Missing '${key}' in request body` }
             })
         console.log(newNote)
+        newNote.folderid = Number(folderid)
+        if(modified) {
+          newNote.modified = modified
+        }
+
         NotesService.addNote(
-          req.app.get('db'),
+          knexInstance,
           newNote
         )
           .then(note => {
@@ -65,7 +71,6 @@ noteRouter
     })
     .get((req, res, next) => {
       res.json(serializeNote(res.note))
-      console.log("Here is response: " + res.note)
     })    
     .delete((req, res, next) => {
         NotesService.deleteNote(
