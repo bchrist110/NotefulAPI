@@ -10,8 +10,8 @@ const serializeNote = note => ({
     id: note.id,
     name: note.name,
     modified: note.modified,
-    folderId: note.folderId,
-    content: note.content
+    content: note.content,
+    folderId: note.folderId
 })
 
 noteRouter
@@ -33,7 +33,7 @@ noteRouter
             return res.status(400).json({
               error: { message: `Missing '${key}' in request body` }
             })
-    
+        console.log(newNote)
         NotesService.addNote(
           req.app.get('db'),
           newNote
@@ -49,9 +49,24 @@ noteRouter
 
 noteRouter
     .route('/:id')
-    .get((req, res, next) => {
-        res.json(serializeNote(res.note))
+    .all((req, res, next) => {
+      NotesService.getById(req.app.get('db'), req.params.id)
+      .then(note => {
+        if (!note) {
+            return res.status(404).json({
+                error: {message: `Note doesn't exist`}
+            })
+        }
+        res.note = note
+        next()
+      })
+      .catch(next)
+        // res.json(serializeNote(res.note))
     })
+    .get((req, res, next) => {
+      res.json(serializeNote(res.note))
+      console.log("Here is response: " + res.note)
+    })    
     .delete((req, res, next) => {
         NotesService.deleteNote(
           req.app.get('db'),
